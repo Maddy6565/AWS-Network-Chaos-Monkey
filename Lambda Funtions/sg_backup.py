@@ -1,25 +1,23 @@
-# sg_backup.py
-# Lambda to snapshot a security group's rules and store in S3.
-import os, json, datetime, uuid, boto3
-from helpers import put_s3_json
+import boto3, json, os, datetime
 
-ec2 = boto3.client("ec2")
-STATE_BUCKET = os.environ.get("STATE_BUCKET")
-TARGET_SG_ID = os.environ.get("TARGET_SG_ID")
+ec2 = boto3.client('ec2')
+s3 = boto3.client('s3')
+
+BUCKET = os.environ['STATE_BUCKET']
+SG_ID = os.environ['TARGET_SG_ID']
 
 def lambda_handler(event, context):
-    if not STATE_BUCKET or not TARGET_SG_ID:
-        raise ValueError("STATE_BUCKET and TARGET_SG_ID must be set")
-    resp = ec2.describe_security_groups(GroupIds=[TARGET_SG_ID])
-    sg = resp["SecurityGroups"][0]
+    resp = ec2.describe_security_groups(GroupIds=[SG_ID])
+    sg = resp['SecurityGroups'][0]
+    
     backup = {
-        "backup_id": str(uuid.uuid4()),
         "timestamp": datetime.datetime.utcnow().isoformat(),
-        "sg_id": sg["GroupId"],
-        "ip_permissions": sg.get("IpPermissions", []),
-        "ip_permissions_egress": sg.get("IpPermissionsEgress", []),
-        "raw": sg
+        "sg_id": SG_ID,
+        "ip_permissions": sg['IpPermissions'],
+        "ip_permissions_egress": sg['IpPermissionsEgress'],
     }
-    key = f"sg-backups/{TARGET_SG_ID}-{backup['backup_id']}.json"
-    put_s3_json(STATE_BUCKET, key, backup)
-    return {"status":"ok", "s3_key": key}
+
+    key = f"sg-backups/{SG_ID}-{backup['timestamp']}.json"
+    s3.put_object(Bucket=BUCKET, Key=key, Body=json.dumps(backup).encode('utf-8'))
+
+    return {"status": "ok", "s3_key": key}
