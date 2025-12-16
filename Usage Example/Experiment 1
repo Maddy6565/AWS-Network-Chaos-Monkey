@@ -21,3 +21,7 @@ Parameters (Environment Variables):
       TARGET_SG_ID=sg-xxxxxxxx
       CHAOS_DURATION_SECONDS=30
       STATE_BUCKET=chaos-monkey-state-yourname
+
+Expected behavior:
+Website returns timeout / connection refused
+After 30 seconds, access is restored automatically
