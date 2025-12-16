@@ -1,0 +1,23 @@
+Block HTTPS Only (Port 443) on Security Group
+
+Scenario:
+Simulates a partial outage where HTTPS traffic fails but HTTP still works.
+
+What breaks:
+HTTPS (443) traffic from 0.0.0.0/0
+
+What remains available:
+HTTP (80)
+
+Target:
+Security Group ingress rule for port 443
+
+Lambda used:
+sg_chaos
+
+Parameters (Environment Variables):
+
+      CHAOS_TARGET_PORT=443
+
+Use case:
+Validate monitoring and alerts for TLS-only outages
