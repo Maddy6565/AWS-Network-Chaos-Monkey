@@ -1,0 +1,23 @@
+Block HTTP/HTTPS on EC2 Security Group (30 seconds)
+
+Scenario:
+Simulates a misconfigured Security Group that blocks inbound web traffic.
+
+What breaks:
+Inbound HTTP (80) and HTTPS (443) access to the EC2 web server
+Application becomes unreachable from the browser
+
+What restores:
+Original Security Group rules are restored automatically after the chaos window
+
+Target:
+EC2 instance Security Group
+
+Lambda used:
+sg_chaos
+
+Parameters (Environment Variables):
+
+      TARGET_SG_ID=sg-xxxxxxxx
+      CHAOS_DURATION_SECONDS=30
+      STATE_BUCKET=chaos-monkey-state-yourname
