@@ -1,0 +1,27 @@
+Detach Internet Gateway Route (15 seconds)
+
+Scenario:
+Simulates a routing misconfiguration by removing the default internet route.
+
+What breaks:
+All outbound internet access from public subnets
+EC2 instances lose external connectivity
+
+What restores:
+Original route table entries are restored from S3 backup
+
+Target:
+Route Table associated with public subnet
+
+Lambda used:
+routetable_chaos
+
+Parameters:
+
+      TARGET_ROUTE_TABLE_ID=rtb-xxxxxxxx
+      CHAOS_DURATION_SECONDS=15
+      STATE_BUCKET=chaos-monkey-state-yourname
+
+Expected behavior:
+curl ifconfig.me fails during chaos
+Connectivity returns after restore
