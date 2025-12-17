@@ -1,0 +1,64 @@
+Safety & Guardrails (Simple Explanation)
+This project is designed to intentionally break things in a safe way.
+To avoid accidental damage, multiple safety checks are built in.
+
+1. Limited Blast Radius (Only What You Allow)
+Chaos experiments only run on resources you explicitly approve.
+
+How this is enforced:
+Only lab / test AWS accounts should be used
+Only resources inside a specific VPC are targeted
+Resources must have an opt-in tag
+
+Required tag:
+ChaosEnabled = true
+If a resource is not tagged, it is never modified.
+
+2. Dry-Run Mode (No Impact)
+Before running a real experiment, you can test everything safely.
+
+CHAOS_DRY_RUN = true
+
+When enabled:
+No network changes are made
+Backups still run
+Logs and metrics are created
+Safe for demos and validation
+
+3. Short, Time-Bound Experiments
+All chaos experiments:
+Run for a short, fixed duration
+Automatically restore the original state
+
+Default limit:
+Maximum chaos duration: 60 seconds
+
+This prevents long or accidental outages.
+
+4. Maintenance Window Protection
+Chaos is blocked during maintenance windows.
+
+Example:
+Maintenance window: 01:00 – 05:00
+
+If the current time falls in this window:
+Chaos does not run
+Nothing is modified
+A log entry is created
+
+5. Automatic & Manual Recovery
+There are three ways to recover safely:
+
+Automatic restore after the timer ends
+Alarm-triggered restore if health checks fail
+Manual panic restore (one command)
+
+Manual restore:
+aws lambda invoke \
+  --function-name sg_restore \
+  response.json
+
+6. Safety Promise
+⚠ This project is for learning and testing only.
+Never run chaos experiments in production.
+Always confirm backups before execution.
