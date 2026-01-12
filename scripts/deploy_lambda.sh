@@ -34,7 +34,7 @@ else
     --role "$ROLE_ARN" \
     --timeout 300 \
     --memory-size 256 \
-    --region "$REGION"
+    --region "$region"
 fi
 
 echo "Deployed $FN"
